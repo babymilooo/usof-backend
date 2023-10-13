@@ -1,0 +1,13 @@
+{
+    "port": 8000,
+    "db" : {
+      "host": "localhost",
+      "user": "kyehorov",
+      "database": "usof",
+      "password": "securepass"
+    },
+    "jswt": {
+      "secretKey": "securepass",
+      "tokenLife": "1d"
+    }
+  }
