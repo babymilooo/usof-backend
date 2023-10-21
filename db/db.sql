@@ -1,19 +1,29 @@
 CREATE DATABASE IF NOT EXISTS usof;
 
-CREATE USER IF NOT EXISTS 'kyehorov' @'localhost' IDENTIFIED BY 'securepass';
-
-GRANT ALL PRIVILEGES ON usof.* TO 'kyehorov' @'localhost';
-
 USE usof;
 
-CREATE TABLE IF NOT EXISTS users (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    login VARCHAR(30) NOT NULL UNIQUE,
-    email VARCHAR(256) NOT NULL UNIQUE,
-    password VARCHAR(256) NOT NULL,
-    fullName VARCHAR(30),
-    profilePicture VARCHAR(256) NOT NULL DEFAULT '/avatars/default_avatar.jpg',
+CREATE TABLE IF NOT EXISTS users
+(
+    id INT NOT NULL AUTO_INCREMENT,
+    login varchar(30) NOT NULL,
+    password varchar(255) NOT NULL,
+    fullName varchar(255) NULL,
+    email varchar(64) UNIQUE NOT NULL,
+    profilePicture VARCHAR(255) DEFAULT 'https://i.pinimg.com/564x/e3/7a/24/e37a24d7d129c8ca06686f7f3bb27515.jpg',
     rating INT NOT NULL DEFAULT 0,
-    role VARCHAR(30) NOT NULL DEFAULT 'user'
+    role ENUM('admin','user') NOT NULL DEFAULT 'user',
+    PRIMARY KEY (id)
 );
 
+CREATE TABLE IF NOT EXISTS refresh_tokens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    token TEXT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS password_resets (
+    email VARCHAR(255) PRIMARY KEY,
+    token VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP NOT NULL
+);
