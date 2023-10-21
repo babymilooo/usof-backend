@@ -12,7 +12,9 @@ const userController = {
 
     async getUser(req, res, next) {
         try {
-            res.json('kirill');
+            const userId = req.params.user_id;
+            const user = await userService.getUser(userId);
+            return res.json(user);
         } catch (e) {
             next(e);
         }
