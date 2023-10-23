@@ -3,6 +3,7 @@ const sequelize = require('../db/db');
 const UserDto = require('../dtos/user-dto');
 const bcrypt = require('bcrypt');
 const userModel = require('../models/user-model')(sequelize);
+const resetPasswordModel = require('../models/resetToken-model')(sequelize);
 const tokenService = require('./token-service');
 const mailServise = require('./mail-service');
 const ApiError = require('../exceptions/api-error');
@@ -75,6 +76,31 @@ class authService {
         await tokenService.saveToken(userDto.id, tokens.refreshToken);
 
         return { ...tokens, user: userDto }
+    }
+
+    async confirmPassword(password, confirm_token) {
+        const passwordResetRecord = await resetPasswordModel.findOne({
+            where: { token: confirm_token }
+        });
+
+        if (!passwordResetRecord) {
+            throw ApiError.BadRequest('Invalid or expired password reset token');
+        }
+
+        const email = passwordResetRecord.email;
+
+        const user = await userModel.findOne({ where: { email } });
+
+        if (!user) {
+            throw ApiError.BadRequest('User does not exist');
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 12);
+
+        await user.update({ password: hashedPassword });
+
+        await passwordResetRecord.destroy();
+
     }
 }
 

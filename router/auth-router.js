@@ -13,6 +13,6 @@ router.post('/login', authController.login);
 router.post('/logout', authController.logout);
 router.post('/password-reset', authController.refresh);
 router.get('/regenerateToken', authController.regenerateToken);
-// router.post('/password-reset/<confirm_token>', someController.someMethod);
+router.post('/password-reset/:confirm_token', authController.confirmPassword);
 
 module.exports = router;

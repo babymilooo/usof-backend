@@ -27,3 +27,52 @@ CREATE TABLE IF NOT EXISTS password_resets (
     token VARCHAR(255) NOT NULL,
     created_at TIMESTAMP NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS Categories (
+    id INT NOT NULL AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS Posts (
+    id INT NOT NULL AUTO_INCREMENT,
+    author INT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    publish_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    status ENUM('active', 'inactive') NOT NULL,
+    content TEXT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (author) REFERENCES Users(id)
+);
+
+-- Таблица для связи многие ко многим между Posts и Categories
+CREATE TABLE IF NOT EXISTS PostCategories (
+    postId INT NOT NULL,
+    categoryId INT NOT NULL,
+    PRIMARY KEY (postId, categoryId),
+    FOREIGN KEY (postId) REFERENCES Posts(id),
+    FOREIGN KEY (categoryId) REFERENCES Categories(id)
+);
+
+CREATE TABLE IF NOT EXISTS Comments (
+    id INT NOT NULL AUTO_INCREMENT,
+    author INT NOT NULL,
+    publish_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    content TEXT NOT NULL,
+    postId INT NOT NULL, -- связь с постом, к которому оставлен комментарий
+    PRIMARY KEY (id),
+    FOREIGN KEY (author) REFERENCES Users(id),
+    FOREIGN KEY (postId) REFERENCES Posts(id)
+);
+
+CREATE TABLE IF NOT EXISTS Likes (
+    id INT NOT NULL AUTO_INCREMENT,
+    author_id INT NOT NULL,
+    entity_Id INT NOT NULL, -- ID поста или комментария
+    entity_type ENUM('comment', 'post') NOT NULL,
+    type ENUM('like', 'dislike') NOT NULL,
+    publish_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    PRIMARY KEY (id),
+    FOREIGN KEY (author_id) REFERENCES Users(id)
+);

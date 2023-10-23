@@ -32,7 +32,7 @@ const authController = {
 
     async logout(req, res, next) {
         try {
-            const {refreshToken} =req.cookies;
+            const { refreshToken } = req.cookies;
             const token = await authService.logout(refreshToken);
             res.clearCookie('refreshToken');
             return res.json(token);
@@ -44,6 +44,7 @@ const authController = {
     async refresh(req, res, next) {
         try {
             const { email } = req.body;
+            console.log(email);
             if (authService.refresh(email)) {
                 res.status(200).send('Ссылка для сброса пароля отправлена на вашу электронную почту.');
             }
@@ -52,7 +53,7 @@ const authController = {
         }
     },
 
-    async regenerateToken (req, res, next) {
+    async regenerateToken(req, res, next) {
         try {
             const { refreshToken } = req.cookies;
             const userData = await authService.regenerateToken(refreshToken);
@@ -63,6 +64,16 @@ const authController = {
         }
     },
 
+    async confirmPassword(req, res, next) {
+        try {
+            const { password } = req.body;
+            const confirm_token = req.params.confirm_token;
+            await authService.confirmPassword(password, confirm_token);
+            return res.status(200).send('Password reset');
+        } catch (e) {
+            next(e);
+        }
+    }
 }
 
 module.exports = authController;
