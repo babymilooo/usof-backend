@@ -18,12 +18,12 @@ class userService {
         return { user: userDto };
     }
 
-    async createNewUser(login, email, password) {
+    async createNewUser(login, email, password, role) {
         const candidate = await userModel.findOne({ where: { login } });
         if (candidate) {
             throw ApiError.BadRequest(`User ${login} already exists`);
         }
-        const newUser = await userModel.create({ login, password, email });
+        const newUser = await userModel.create({ login, password, email, role });
         const userDto = new UserDto(newUser);
         return { user: userDto };
     }

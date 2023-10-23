@@ -1,5 +1,4 @@
 const ApiError = require('../exceptions/api-error');
-const { use } = require('../router/auth-router');
 const tokenService = require('../service/token-service');
 
 module.exports = function (req, res, next) {
@@ -19,7 +18,6 @@ module.exports = function (req, res, next) {
         if(!userData) {
             return next(ApiError.UnauthorizedError());
         }
-
 
         req.user = userData;
         next();
