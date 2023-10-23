@@ -14,11 +14,8 @@ module.exports = (sequelize) => {
     },
     fullName: {
       type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        // Добавьте сюда свои правила валидации
-        notEmpty: true, // поле не должно быть пустым
-      }
+      defaultValue: '',
+      allowNull: true
     },
     email: {
       type: DataTypes.STRING,
