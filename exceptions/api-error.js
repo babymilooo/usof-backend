@@ -19,4 +19,8 @@ module.exports = class ApiError extends Error {
     static ForbiddenError(message, errors = []) {
         return new ApiError(403, message, errors);
     }
+
+    static NotFound(message, errors = []) {
+        return new ApiError(404, message, errors);
+    }
 }

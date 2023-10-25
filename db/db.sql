@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS Posts (
     author INT NOT NULL,
     title VARCHAR(255) NOT NULL,
     publish_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    status ENUM('active', 'inactive') NOT NULL,
+    status ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
     content TEXT NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (author) REFERENCES Users(id)
