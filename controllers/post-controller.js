@@ -14,7 +14,8 @@ const postController = {
 
     async getPost(req, res, next) {
         try {
-            const postId = req.params.id;
+            const postId = req.params.post_id;
+            console.log(postId);
             const post = await postService.getPost(postId);
             res.status(200).json(post);
         } catch (e) {
@@ -24,7 +25,7 @@ const postController = {
 
     async getAllCommentsForPost(req, res, next) {
         try {
-            const postId = req.params.id;
+            const postId = req.params.post_id;
             const comments = await postService.getAllCommentsForPost(postId);
             res.status(200).json(comments);
         } catch (e) {
@@ -34,7 +35,7 @@ const postController = {
 
     async CreateComment(req, res, next) {
         try {
-            const postId = req.params.id;
+            const postId = req.params.post_id;
             const token = req.headers.authorization.split(' ')[1];
             const { content } = req.body;
             const comment = await postService.CreateComment(postId, token, content);
@@ -46,7 +47,7 @@ const postController = {
 
     async getAllCategoriesForPost(req, res, next) {
         try {
-            const postId = req.params.id;
+            const postId = req.params.post_id;
             categories = await postService.getAllCategoriesForPost(postId);
             res.status(200).json(categories);
         } catch (e) {
@@ -56,8 +57,8 @@ const postController = {
 
     async getAllLikesForPost(req, res, next) {
         try {
-            const postId = req.params.id;
-            const likes = await likeService.getAllLikesForPost(postId);
+            const postId = req.params.post_id;
+            const likes = await postService.getAllLikesForPost(postId);
             res.status(200).json(likes);
         } catch (e) {
             next(e);
@@ -75,13 +76,12 @@ const postController = {
         }
     },
 
-
     async LikePost(req, res, next) {
         try {
-            const postId = req.params.id;
+            const postId = req.params.post_id;
             const token = req.headers.authorization.split(' ')[1];
-            const post = likeService.addLikeToPost(postId, token);
-            res.status(200).json('post liked', post);
+            const post = postService.addLikeToPost(postId, token);
+            res.status(200).json('post liked');
         } catch (e) {
             next(e);
         }
@@ -89,7 +89,7 @@ const postController = {
 
     async UpdatePost(req, res, next) {
         try {
-            const postId = req.params.id;
+            const postId = req.params.post_id;
             const { title, status, content } = req.body;
 
             const updatedPost = await postService.updatePost(postId, {
@@ -106,8 +106,8 @@ const postController = {
 
     async DeletePost(req, res, next) {
         try {
-            const postId = req.params.id;
-            await postService.deletePost(postId, userId);
+            const postId = req.params.post_id;
+            await postService.deletePost(postId);
             res.status(200).send('Post deleted successfully');
         } catch (e) {
             next(e);
@@ -116,10 +116,9 @@ const postController = {
 
     async DeleteLike(req, res, next) {
         try {
-            const likeId = req.params.id;
             const token = req.headers.authorization.split(' ')[1];
 
-            await postService.deleteLike(likeId, token);
+            await postService.deleteLike(token);
 
             res.status(200).send('Like deleted successfully');
         } catch (e) {

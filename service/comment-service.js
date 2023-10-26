@@ -1,6 +1,8 @@
 const sequelize = require('../db/db');
 const commentModel = require('../models/comment-model')(sequelize);
 const likeModel = require('../models/like-model')(sequelize);
+const jwt = require('jsonwebtoken');
+const ApiError = require('../exceptions/api-error');
 
 class commentService {
     async getCommentData(commentId) {
@@ -18,17 +20,23 @@ class commentService {
 
     async createLikeForComment(commentId, token) {
         const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
-        userId = decoded.id;
+        const userId = decoded.id;
         if (!userId) {
             throw ApiError.BadRequest("author id is required");
         }
 
-        return await likeModel.create({
-            author_id: userId,
-            entity_Id: commentId,
-            entity_type: 'comment',
-            type: 'like'
-        });
+        const like = await likeModel.findOne({ where: { author_id: userId } });
+        if (like) {
+            throw ApiError.BadRequest('the post has already been liked');
+        }
+        else {
+            await likeModel.create({
+                author_id: userId,
+                entity_Id: commentId,
+                entity_type: 'comment',
+                type: 'like'
+            });
+        }
     }
 
     async updateComment(commentId, data) {
@@ -43,9 +51,9 @@ class commentService {
         });
     }
 
-    async deleteLikeForComment(commentId, userId) {
+    async deleteLikeForComment(commentId, token) {
         const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
-        userId = decoded.id;
+        const userId = decoded.id;
         if (!userId) {
             throw ApiError.BadRequest("author id is required");
         }

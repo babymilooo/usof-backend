@@ -7,7 +7,10 @@ const authRouter = require('./router/auth-router');
 const userRouter = require('./router/user-router');
 const postRouter = require('./router/post-router');
 const categoryRouter = require('./router/category-router');
+const commentRouter = require('./router/comment-router');
 const errorMiddleware = require('./middlewares/error-middleware');
+
+
 const { request } = require('http');
 const PORT = process.env.PORT || 5000;
 
@@ -21,8 +24,10 @@ app.use('/api/auth', authRouter);
 app.use('/api', userRouter);
 app.use('/api', postRouter);
 app.use('/api', categoryRouter);
+app.use('/api', commentRouter);
 app.use(errorMiddleware);
 
+let server;
 const start = async () => {
     try {
         if (!process.env.DB_NAME || !process.env.DB_USER || !process.env.DB_PASS || !process.env.DB_HOST) {
@@ -30,7 +35,7 @@ const start = async () => {
             process.exit(1);
         }
         await sequelize.authenticate();
-        app.listen(PORT, () => console.log(`Server is running on port http://127.0.0.1:${PORT}`));
+        server = app.listen(PORT, () => console.log(`Server is running on port http://127.0.0.1:${PORT}`));
     } catch (e) {
         console.error('Unable to connect to the database:', e);
     }
@@ -42,7 +47,7 @@ process.on('SIGTERM', handleExit);
 
 async function handleExit(signal) {
     console.log(`Received ${signal}. Close server and database connection..`);
-    app.close(async () => {
+    server.close(async () => {
         console.log('HTTP server closed.');
         try {
             await sequelize.close();

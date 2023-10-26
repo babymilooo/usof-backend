@@ -3,8 +3,8 @@ const categoryModel = require('../models/category-model')(sequelize);
 const postCategoryModel = require('../models/postCategory-model')(sequelize);
 const postModel = require('../models/post-model')(sequelize);
 
-postModel.belongsToMany(categoryModel, { through: postCategoryModel, foreignKey: 'postId' });
-categoryModel.belongsToMany(postModel, { through: postCategoryModel, foreignKey: 'categoryId' });
+postModel.belongsToMany(categoryModel, { through: 'PostCategory', foreignKey: 'postId', otherKey: 'categoryId', as: 'postsCategories' });
+categoryModel.belongsToMany(postModel, { through: 'PostCategory', foreignKey: 'categoryId', otherKey: 'postId', as: 'postsCategories' });
 
 class CategoryService {
     async getAllCategories() {
@@ -19,11 +19,12 @@ class CategoryService {
         return await postModel.findAll({
             include: [{
                 model: categoryModel,
-                as: 'categories',
+                as: 'postsCategories',
                 through: {
                     model: postCategoryModel,
                     where: { categoryId: categoryId }
-                }
+                },
+                required: true
             }]
         });
     }

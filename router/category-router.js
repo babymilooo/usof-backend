@@ -4,11 +4,11 @@ const categoryController = require('../controllers/category-controller');
 const authMiddleware = require('../middlewares/auth-middleware');
 const roleMiddleware = require('../middlewares/role-middleware');
 
-router.get('/categories', categoryController.getAllCategories);
-router.get('/categories/category_id', categoryController.getCategory);
-router.get('/api/categories/:category_id/posts', categoryController.getCategoryPosts);
-router.post('/api/categories', categoryController.createCategory);
-router.patch('/api/categories/:category_id', categoryController.updateCategory);
-router.delete('/api/categories/:category_id', categoryController.deleteCategory);
+router.get('/categories', authMiddleware, roleMiddleware, categoryController.getAllCategories);
+router.get('/categories/:category_id', authMiddleware, roleMiddleware, categoryController.getCategory);
+router.get('/categories/:category_id/posts', authMiddleware, roleMiddleware, categoryController.getCategoryPosts);
+router.post('/categories', authMiddleware, roleMiddleware, categoryController.createCategory);
+router.patch('/categories/:category_id', authMiddleware, roleMiddleware, categoryController.updateCategory);
+router.delete('/categories/:category_id', authMiddleware, roleMiddleware, categoryController.deleteCategory);
 
 module.exports = router;
